@@ -1,8 +1,7 @@
 language: c
 env:
   matrix:
-    - ARDUINO_SDK_VERSION=1.6.13
-    - ARDUINO_SDK_VERSION=1.8.4
+    - ARDUINO_SDK_VERSION=1.8.5
 addons:
   apt:
     packages:
