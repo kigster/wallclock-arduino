@@ -13,7 +13,7 @@
 
 #include "GaugedValue.h"
 
-namespace Wallock {
+namespace WallClock {
     class State {
     private:
         GaugedValue &photoresistorReading,

@@ -7,13 +7,13 @@
  *
  *  (c) 2014 All rights reserved, MIT License.
  */
-#include "Wallock.h"
+#include "Configuration.h"
 #ifdef ENABLE_MENU
 #include "SetTimeMenu.h"
 #include "App.h"
 
-namespace Wallock {
-    SetTimeMenu::SetTimeMenu(Wallock::App *application) {
+namespace WallClock {
+    SetTimeMenu::SetTimeMenu(WallClock::App *application) {
         app = application;
         h = m = 0;
         what = (char *) "";
@@ -25,7 +25,7 @@ namespace Wallock {
         what = (char *) "";
     }
 
-    void SetTimeMenu::setApp(Wallock::App *application) {
+    void SetTimeMenu::setApp(WallClock::App *application) {
         app = application;
     }
 

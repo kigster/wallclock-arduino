@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
-message("src/application/CMakeLists.txt")
+cmake_minimum_required(VERSION 3.3)
 
 set(SOURCES
         Encoder.cpp
@@ -23,7 +22,7 @@ set(HEADERS
         SetTimeHelper.h
         SetTimeMenu.h
         State.h
-        Wallock.h
+        Configuration.h
         )
 
 generate_arduino_library(application

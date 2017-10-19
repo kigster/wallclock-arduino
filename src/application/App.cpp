@@ -9,10 +9,10 @@
  */
 
 #include <Arduino.h>
-#include "Wallock.h"
+#include "Configuration.h"
 #include "App.h"
 
-namespace Wallock {
+namespace WallClock {
     App::App(       PinoutMapping               &_pinout,
                     State                       &_state,
                     RotaryEncoderWithButton     &_rotary,

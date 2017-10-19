@@ -15,15 +15,15 @@
  * Author: Konstantin Gredeskoul <kigster@gmail.com>
  */
 
-#include "application/Wallock.h"
+#include "application/Configuration.h"
 #include "application/App.h"
 
 char buffer[80];
 
-Wallock::GaugedValue brightnessGauge("brightness", 0, 15, 1, true);
-Wallock::GaugedValue photoGauge("photo-value", 0, 800, 25, false);
+WallClock::GaugedValue brightnessGauge("brightness", 0, 15, 1, true);
+WallClock::GaugedValue photoGauge("photo-value", 0, 800, 25, false);
 
-Wallock::PinoutMapping pinout = {
+WallClock::PinoutMapping pinout = {
         A3,    // PhotoResistor
 
                // https://www.pjrc.com/teensy/td_libs_Encoder.html
@@ -35,7 +35,7 @@ Wallock::PinoutMapping pinout = {
         2      // Number of NeoPixels
 };
 
-Wallock::State state(photoGauge, brightnessGauge);
+WallClock::State state(photoGauge, brightnessGauge);
 
 OneButton button(pinout.pinRotaryButton, (uint8_t) pinout.pinRotaryButton);
 
@@ -46,7 +46,7 @@ RotaryEncoderWithButton rotary(
 
 Adafruit_7segment matrix;
 
-Wallock::App app(pinout, state, rotary, matrix, button);
+WallClock::App app(pinout, state, rotary, matrix, button);
 
 SimpleTimer timer(1);
 

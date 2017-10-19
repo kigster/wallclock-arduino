@@ -8,20 +8,20 @@
  *  (c) 2014 All rights reserved, MIT License.
  */
 
-#include "Wallock.h"
+#include "Configuration.h"
 #ifdef ENABLE_MENU
 
 #ifndef SETTIMEMENU_H_
 #define SETTIMEMENU_H_
 
-namespace Wallock {
+namespace WallClock {
     class App;
 
     class SetTimeMenu {
     public:
         SetTimeMenu();
-        SetTimeMenu(Wallock::App *app);
-        void setApp(Wallock::App *app);
+        SetTimeMenu(WallClock::App *app);
+        void setApp(WallClock::App *app);
         void configureTime() ;
         void nextMode();
     private:

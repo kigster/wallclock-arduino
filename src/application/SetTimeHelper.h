@@ -8,7 +8,7 @@
  *  (c) 2014 All rights reserved, MIT License.
  */
 
-#include "Wallock.h"
+#include "Configuration.h"
 
 #ifdef ENABLE_SET_TIME
 

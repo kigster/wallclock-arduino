@@ -11,7 +11,7 @@
 #ifndef BEDTIMEAPP_H_
 #define BEDTIMEAPP_H_
 
-#include "Wallock.h"
+#include "Configuration.h"
 #include "State.h"
 
 #ifdef ENABLE_LCD
@@ -34,15 +34,21 @@ namespace SetTime {
     } TimeMode;
 };
 
-namespace Wallock {
+namespace WallClock {
 
     typedef struct PinoutMapping_s {
          uint8_t pinPhotoResistor;
          uint8_t pinRotaryLeft;
          uint8_t pinRotaryRight;
          uint8_t pinRotaryButton;
+#ifdef ENABLE_NEOPIXELS
          uint8_t pinNeoPixels;
          uint8_t numNeoPixels;
+#endif
+#ifdef ENABLE_ANALOG_POTENTIOMETER
+         uint8_t pinAnalogPot;
+#endif
+
      } PinoutMapping;
 
 

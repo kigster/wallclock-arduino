@@ -10,11 +10,12 @@
 
 #ifndef GAUGEDVALUE_H_
 #define GAUGEDVALUE_H_
-#include "Wallock.h"
+
+#include "Configuration.h"
 
 const static int PRINT_WAIT_MS = 100;
 
-namespace Wallock {
+namespace WallClock {
     class GaugedValue {
     private:
         unsigned int current;

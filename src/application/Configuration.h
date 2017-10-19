@@ -11,17 +11,15 @@
 #ifndef _WALLOCK_H_
 #define _WALLOCK_H_
 
+//#define ENABLE_LCD
+
 #define ENABLE_PHOTORESISTOR
 #define ENABLE_SET_TIME
 #define ENABLE_MENU
-
-//#define ENABLE_LCD
-
 #define ENABLE_NEOPIXELS
-#define DEBUG 1
-#endif
+#define ENABLE_ANALOG_POTENTIOMETER
 
-#define ENCODER_USE_INTERRUPTS
+#define DEBUG 1
 
 #include "Arduino.h"
 #include "Encoder.h"
@@ -41,3 +39,4 @@
 //}
 extern char buffer[];
 
+#endif
