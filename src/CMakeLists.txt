@@ -29,12 +29,12 @@ FUNCTION(build_library LIB LIB_SOURCE_PATH)
     prepend(LIB_SOURCES ${LIB_SOURCE_PATH} ${LIB_SOURCES})
     prepend(LIB_HEADERS ${LIB_SOURCE_PATH} ${LIB_HEADERS})
 
-    message("LIB_SOURCES: ${LIB_SOURCES} | HEADERS: ${LIB_HEADERS}")
+    message("LIB_SOURCES: ${LIB_SOURCES}\nLIB_HEADERS: ${LIB_HEADERS}")
 
     GENERATE_ARDUINO_LIBRARY(${LIB}
             SRCS ${LIB_SOURCE_PATH}/${LIB}.cpp ${LIB_SOURCE_PATH}/${LIB}.h ${LIB_SOURCES} ${LIB_HEADERS}
             HDRS ${LIB_SOURCE_PATH}/${LIB}.h ${LIB_HEADERS}
-            BOARD uno)
+            BOARD $ENV{BOARD_NAME})
 ENDFUNCTION(build_library)
 
 
@@ -44,7 +44,7 @@ FOREACH(LIB ${CUSTOM_LIBRARIES})
 ENDFOREACH(LIB)
 
 FOREACH(LIB ${ARDUINO_LIBRARIES})
-    build_library(${LIB} "${ARDUINO_SDK_HARDWARE_LIBRARY_PATH}/${LIB}/src/")
+    build_library(${LIB} "${ARDUINO_SDK_HARDWARE_LIBRARY_PATH}/${LIB}/src")
 ENDFOREACH(LIB)
 
 add_subdirectory("application")
@@ -54,6 +54,6 @@ set(SOURCE_FILES WallClock3.cpp)
 generate_arduino_firmware(wallclock
         SRCS ${SOURCE_FILES}
         LIBS application ${CUSTOM_LIBRARIES} ${ARDUINO_LIBRARIES}
-        BOARD uno
-        PORT /dev/cu.usbserial-DN01AF0T
+        BOARD $ENV{BOARD_NAME}
+        PORT $ENV{BOARD_DEVICE}
         )

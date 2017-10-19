@@ -29,4 +29,4 @@ set(HEADERS
 generate_arduino_library(application
         SRCS ${SOURCES}
         HDRS ${HEADERS}
-        BOARD uno)
+        BOARD $ENV{BOARD_NAME})

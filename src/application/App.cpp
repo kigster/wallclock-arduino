@@ -35,7 +35,7 @@ namespace Wallock {
             lcd = new LiquidCrystal_I2C(0x3F, 20, 4);
         #endif
         #ifdef ENABLE_NEOPIXELS
-            neoPixelManager = new NeoPixelManager(3, pinout.pinNeoPixels);
+            neoPixelManager = new NeoPixelManager(pinout.numNeoPixels, pinout.pinNeoPixels);
         #endif
         #ifdef ENABLE_MENU
             menu.setApp(this);

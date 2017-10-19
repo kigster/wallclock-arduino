@@ -42,6 +42,7 @@ namespace Wallock {
          uint8_t pinRotaryRight;
          uint8_t pinRotaryButton;
          uint8_t pinNeoPixels;
+         uint8_t numNeoPixels;
      } PinoutMapping;
 
 

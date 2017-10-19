@@ -31,12 +31,13 @@ Wallock::PinoutMapping pinout = {
         3,     // Right Rotary (interrupt enabled)
 
         4,     // Rotary Button
+        6,     // pin for NeoPixels
         2      // Number of NeoPixels
 };
 
 Wallock::State state(photoGauge, brightnessGauge);
 
-OneButton button(pinout.pinRotaryButton, 4);
+OneButton button(pinout.pinRotaryButton, (uint8_t) pinout.pinRotaryButton);
 
 RotaryEncoderWithButton rotary(
         (uint8_t) pinout.pinRotaryLeft,
@@ -108,7 +109,7 @@ void setup() {
 #ifdef TEENSYDUINO
     setSyncProvider(getTeensy3Time);
 #endif
-    Serial.println(F("[wallock] v2.1(c) 2015 kiguino.moos.io"));
+    Serial.println(F("[wallock] v3 (C) 2017 https://reinvent.one"));
     Serial.println(F("app->setup()"));
 
     app.setup();
