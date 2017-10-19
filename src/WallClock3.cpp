@@ -15,8 +15,8 @@
  * Author: Konstantin Gredeskoul <kigster@gmail.com>
  */
 
-#include "app_lib/Wallock.h"
-#include "app_lib/App.h"
+#include "application/Wallock.h"
+#include "application/App.h"
 
 char buffer[80];
 
@@ -24,16 +24,19 @@ Wallock::GaugedValue brightnessGauge("brightness", 0, 15, 1, true);
 Wallock::GaugedValue photoGauge("photo-value", 0, 800, 25, false);
 
 Wallock::PinoutMapping pinout = {
-        A3,     // PhotoResistor
-        2,     // Left Rotary
-        3,     // Right Rotary
+        A3,    // PhotoResistor
+
+               // https://www.pjrc.com/teensy/td_libs_Encoder.html
+        2,     // Left Rotary (interrupt enabled)
+        3,     // Right Rotary (interrupt enabled)
+
         4,     // Rotary Button
         2      // Number of NeoPixels
 };
 
 Wallock::State state(photoGauge, brightnessGauge);
 
-OneButton button(pinout.pinRotaryButton, 1);
+OneButton button(pinout.pinRotaryButton, 4);
 
 RotaryEncoderWithButton rotary(
         (uint8_t) pinout.pinRotaryLeft,

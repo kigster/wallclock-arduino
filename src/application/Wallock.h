@@ -21,9 +21,11 @@
 #define DEBUG 1
 #endif
 
+#define ENCODER_USE_INTERRUPTS
+
 #include "Arduino.h"
-#include <Encoder.h>
-#include <RotaryEncoderWithButton.h>
+#include "Encoder.h"
+#include "RotaryEncoderWithButton.h"
 #include <Wire.h>
 #include <time.h>
 #include <DS1307RTC.h>
@@ -32,6 +34,10 @@
 #include <OneButton.h>
 #include <SimpleTimer.h>
 
-
+//extern "C" {
+#include <stdlib.h>
+#include <string.h>
+#include <inttypes.h>
+//}
 extern char buffer[];
 
