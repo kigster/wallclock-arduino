@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.2.2)
 
 FOREACH(LIB ${CUSTOM_LIBRARIES})
     build_library(${LIB} "${ARDUINO_CUSTOM_LIBRARY_PATH}/${LIB}")
