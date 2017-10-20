@@ -6,7 +6,7 @@ env:
   global:
     - BOARD_NAME=uno
     - BOARD_DEVICE=/dev/null
-    - ARDUINO_SDK_VERSION=1.8.5
+    - ARDUINO_SDK_VERSION=1.8.4
 addons:
   apt:
     packages:
