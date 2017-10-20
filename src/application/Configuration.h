@@ -30,7 +30,7 @@
 #include "Encoder.h"
 #include "RotaryEncoderWithButton.h"
 #include <Wire.h>
-#include <time.h>
+#include <Time.h>
 #include <DS1307RTC.h>
 #include <Adafruit_LEDBackpack.h>
 #include <Adafruit_GFX.h>
