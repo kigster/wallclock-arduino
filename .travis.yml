@@ -19,11 +19,8 @@ addons:
 before_install:
   - if [[ ! -f arduino-sdk/arduino ]] ; then wget "https://downloads.arduino.cc/arduino-$ARDUINO_SDK_VERSION-linux32.tar.xz" -O arduino-sdk.tar.xz; mkdir -p arduino-sdk ; tar xf arduino-sdk.tar.xz -C arduino-sdk --strip-components 1 ; fi
   - export ARDUINO_SDK_PATH="$(pwd)/arduino-sdk"
-install:
-  - mkdir build
-  - rm -rf build/*
-  - cd build/
 script:
+  - cd src
   - cmake -D ARDUINO_SDK_PATH="$ARDUINO_SDK_PATH" ..
   - cat CMakeFiles/CMakeOutput.log
   - make
