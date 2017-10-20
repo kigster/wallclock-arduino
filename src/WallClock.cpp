@@ -68,8 +68,8 @@ Adafruit_7segment matrix;
 
 WallClock::App app(pinout, state, rotary, matrix, button);
 
-
-SimpleTimer timer(1);
+#include <SimpleTimer.h>
+SimpleTimer timer;
 
 #ifdef TEENSYDUINO
 time_t getTeensy3Time() {
