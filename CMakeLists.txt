@@ -45,11 +45,15 @@
 ##
 
 cmake_minimum_required(VERSION 3.2.2)
-message("./CMakeLists.txt")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(ARDUINO_SDK_PATH /Applications/Arduino.app/Contents/Java)
+if (NOT DEFINED ENV{ARDUINO_SDK_PATH})
+    set(ARDUINO_SDK_PATH /Applications/Arduino.app/Contents/Java)
+else ()
+    set(ARDUINO_SDK_PATH $ENV{ARDUINO_SDK_PATH})
+endif()
+
 set(ARDUINO_SDK_LIBRARY_PATH "${ARDUINO_SDK_PATH}/libraries")
 set(ARDUINO_SDK_HARDWARE_LIBRARY_PATH "${ARDUINO_SDK_PATH}/hardware/arduino/avr/libraries")
 set(ARDUINO_CUSTOM_LIBRARY_PATH /Users/kig/Dropbox/Workspace/oss/arduino/libraries)
