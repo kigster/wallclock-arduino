@@ -1,4 +1,3 @@
-
 language: c
 cache:
   directories:
@@ -22,5 +21,4 @@ before_install:
 script:
   - cd src
   - cmake -D ARDUINO_SDK_PATH="$ARDUINO_SDK_PATH" ..
-  - cat CMakeFiles/CMakeOutput.log
   - make
