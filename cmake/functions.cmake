@@ -20,11 +20,11 @@ FUNCTION(detect_arduino_device)
     list(LENGTH BOARD_DEVICE NUM_DEVICES)
     message(STATUS "Total of ${NUM_DEVICES} devices have been found.")
 
-    if (${NUM_DEVICES} LESS_EQUAL 0)
+    if (${NUM_DEVICES} EQUAL 0)
         message(FATAL_ERROR "No devices have been found, aborting!")
     elseif (${NUM_DEVICES} EQUAL 1)
         message(STATUS "Auto-detected 1 device ${BOARD_DEVICE}, continuing...")
-    else ()
+    else()
         message(FATAL_ERROR "Too many devices have been detected! Force device by setting 'BOARD_DEVICE' variable, or unplug one or more devices!")
     endif ()
 
