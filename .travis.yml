@@ -1,7 +1,7 @@
 language: c
 cache:
   directories:
-    - arduino-sdk
+    - ${HOME}/arduino-sdk-${ARDUINO_SDK_VERSION}
 env:
   global:
     - BOARD_NAME=uno
@@ -16,9 +16,9 @@ addons:
       - avr-libc
       - avrdude
 before_install:
-  - if [[ ! -f ~/arduino-sdk-${ARDUINO_SDK_VERSION}/arduino ]] ; then export PROJ=$(pwd); cd ~/; wget "https://downloads.arduino.cc/arduino-$ARDUINO_SDK_VERSION-linux32.tar.xz" -O arduino-sdk.tar.xz; mkdir -p arduino-sdk-${ARDUINO_SDK_VERSION} ; tar xf arduino-sdk.tar.xz -C arduino-sdk-${ARDUINO_SDK_VERSION} --strip-components 1 ; cd ${PROJ}; fi
+  - if [[ ! -f ${HOME}/arduino-sdk-${ARDUINO_SDK_VERSION}/arduino ]] ; then export PROJ=$(pwd); cd ~/; wget "https://downloads.arduino.cc/arduino-$ARDUINO_SDK_VERSION-linux32.tar.xz" -O arduino-sdk.tar.xz; mkdir -p arduino-sdk-${ARDUINO_SDK_VERSION} ; tar xf arduino-sdk.tar.xz -C arduino-sdk-${ARDUINO_SDK_VERSION} --strip-components 1 ; cd ${PROJ}; fi
   - export ARDUINO_SDK_PATH="${HOME}/arduino-sdk-${ARDUINO_SDK_VERSION}"
-  - [[ -d ${ARDUINO_SDK_PATH} ]] || exit 127
+  - if [[ ! -d ${ARDUINO_SDK_PATH} ]] ; then exit 127; fi
 script:
   - cd src
   - cmake -D ARDUINO_SDK_PATH="$ARDUINO_SDK_PATH" ..
