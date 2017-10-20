@@ -1,4 +1,7 @@
 language: c
+cache:
+  directories:
+    - arduino-sdk
 env:
   global:
     - BOARD_NAME=uno
@@ -14,9 +17,11 @@ addons:
       - avr-libc
       - avrdude
 before_install:
-  - wget "https://downloads.arduino.cc/arduino-$ARDUINO_SDK_VERSION-linux32.tar.xz" -O arduino-sdk.tar.xz
-  - mkdir arduino-sdk
-  - tar xf arduino-sdk.tar.xz -C arduino-sdk --strip-components 1
+  - if [[ ! -d arduino-sdk ]] ; then \
+      wget "https://downloads.arduino.cc/arduino-$ARDUINO_SDK_VERSION-linux32.tar.xz" -O arduino-sdk.tar.xz; \
+      mkdir -p arduino-sdk ; \
+      tar xf arduino-sdk.tar.xz -C arduino-sdk --strip-components 1 ; \
+    fi
   - export ARDUINO_SDK_PATH="$(pwd)/arduino-sdk"
 install:
   - mkdir build
