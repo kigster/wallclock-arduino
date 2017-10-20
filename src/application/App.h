@@ -36,6 +36,7 @@ namespace SetTime {
 
 namespace WallClock {
 
+
     typedef struct PinoutMapping_s {
          uint8_t pinPhotoResistor;
          uint8_t pinRotaryLeft;
@@ -48,9 +49,19 @@ namespace WallClock {
 #ifdef ENABLE_ANALOG_POTENTIOMETER
          uint8_t pinAnalogPot;
 #endif
-
+#ifdef ENABLE_DHT22
+         uint8_t pinDHT22;
+#endif
      } PinoutMapping;
 
+#ifdef ENABLE_DHT22
+    typedef struct DHT_SensorData_s {
+         float humidity = 0;
+         float temperature = 0;
+         bool isFahrenheit = true;
+         int lastReadingAt = 0;
+    } DHT_SensorData;
+#endif
 
     class App {
         private:
@@ -65,6 +76,7 @@ namespace WallClock {
             bool                                        colonOn, screenOn, neoPixelsOn;
             int                                         lastPhotoValue, currentPhotoValue;
             float                                       photoOffsetPercentage;
+
 
         public:
             App(            PinoutMapping               &_pinout,
@@ -88,6 +100,12 @@ namespace WallClock {
                 NeoPixelManager *neoPixelManager;
             #endif
 
+            #ifdef ENABLE_DHT22
+                DHT *dht;
+                DHT_SensorData dhtData;
+                void setDHT22(DHT *_dht);
+                DHT_SensorData readDHT(const bool isFahrenheit);
+            #endif
 
             void setup();
             void run();

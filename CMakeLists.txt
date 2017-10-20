@@ -75,6 +75,8 @@ set(CUSTOM_LIBRARIES
         Adafruit_LEDBackpack
         Adafruit_GFX
         Adafruit_NeoPixel
+        Adafruit_Sensor
+        DHT
         OneButton
         SimpleTimer
         Time
@@ -84,6 +86,7 @@ set(ENV{Encoder_HEADERS} "utility/interrupt_config.h utility/interrupt_pins.h")
 set(ENV{Encoder_SOURCES} "utility/interrupt_config.h utility/interrupt_pins.h")
 set(ENV{Wire_HEADERS} utility/twi.h)
 set(ENV{Wire_SOURCES} utility/twi.c)
+set(ENV{Adafruit_Sensor_ONLY_HEADER} 1)
 
 project(WallClock3 C CXX)
 

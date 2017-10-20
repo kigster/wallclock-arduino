@@ -55,12 +55,15 @@ FUNCTION(build_library LIB LIB_SOURCE_PATH)
 
     message("LIB_SOURCES: ${LIB_SOURCES}\nLIB_HEADERS: ${LIB_HEADERS}")
 
+    if(NOT DEFINED ENV{${LIB}_ONLY_HEADER})
+        list(APPEND LIB_SOURCES ${LIB_SOURCE_PATH}/${LIB}.cpp)
+    endif()
+
     GENERATE_ARDUINO_LIBRARY(${LIB}
-            SRCS ${LIB_SOURCE_PATH}/${LIB}.cpp ${LIB_SOURCE_PATH}/${LIB}.h ${LIB_SOURCES} ${LIB_HEADERS}
+            SRCS ${LIB_SOURCE_PATH}/${LIB}.h ${LIB_SOURCES} ${LIB_HEADERS}
             HDRS ${LIB_SOURCE_PATH}/${LIB}.h ${LIB_HEADERS}
             BOARD $ENV{BOARD_NAME})
 ENDFUNCTION(build_library)
-
 
 
 FUNCTION(prepend var prefix)

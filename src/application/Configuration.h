@@ -18,8 +18,13 @@
 #define ENABLE_MENU
 #define ENABLE_NEOPIXELS
 #define ENABLE_ANALOG_POTENTIOMETER
-
+#define ENABLE_DHT22
+#endif
 #define DEBUG 1
+
+#ifdef ENABLE_DHT22
+#include <DHT.h>
+#endif
 
 #include "Arduino.h"
 #include "Encoder.h"
@@ -39,4 +44,4 @@
 //}
 extern char buffer[];
 
-#endif
+

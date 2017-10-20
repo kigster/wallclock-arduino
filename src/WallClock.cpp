@@ -23,6 +23,14 @@ char buffer[80];
 WallClock::GaugedValue brightnessGauge("brightness", 0, 15, 1, true);
 WallClock::GaugedValue photoGauge("photo-value", 0, 800, 25, false);
 
+#ifdef ENABLE_DHT22
+#define DHTPIN 5
+#define DHTTYPE DHT22
+#endif
+
+
+// I2C uses A4 and A5
+
 WallClock::PinoutMapping pinout = {
         A3,    // PhotoResistor
 
@@ -31,9 +39,21 @@ WallClock::PinoutMapping pinout = {
         3,     // Right Rotary (interrupt enabled)
 
         4,     // Rotary Button
+#ifdef ENABLE_NEOPIXELS
         6,     // pin for NeoPixels
-        2      // Number of NeoPixels
+        2,     // Number of NeoPixels
+#endif
+#ifdef ENABLE_ANALOG_POTENTIOMETER
+        A0,
+#endif
+#ifdef ENABLE_DHT22
+        DHTPIN,
+#endif
 };
+
+#ifdef ENABLE_DHT22
+DHT dht(DHTPIN, DHTTYPE);
+#endif
 
 WallClock::State state(photoGauge, brightnessGauge);
 
@@ -47,6 +67,7 @@ RotaryEncoderWithButton rotary(
 Adafruit_7segment matrix;
 
 WallClock::App app(pinout, state, rotary, matrix, button);
+
 
 SimpleTimer timer(1);
 
@@ -113,6 +134,11 @@ void setup() {
     Serial.println(F("app->setup()"));
 
     app.setup();
+
+    #ifdef ENABLE_DHT22
+    dht.begin();
+    app.setDHT22(&dht);
+    #endif
 
     Serial.println(F("setting up timers.."));
 

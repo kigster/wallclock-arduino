@@ -42,6 +42,32 @@ namespace WallClock {
         #endif
     }
 
+    #ifdef ENABLE_DHT22
+    void App::setDHT22(DHT *_dht) {
+        dht = _dht;
+    }
+
+    DHT_SensorData App::readDHT(const bool isFahrenheit) {
+
+        if (millis() - dhtData.lastReadingAt < 3000)
+            return dhtData;
+
+        dhtData.lastReadingAt = millis();
+        dhtData.isFahrenheit = isFahrenheit;
+        // Reading temperature or humidity takes about 250 milliseconds!
+        dhtData.humidity = dht->readHumidity();
+        dhtData.temperature = dht->readTemperature(isFahrenheit);
+
+        // Check if any reads failed and exit early (to try again).
+        if (isnan(dhtData.humidity) || isnan(dhtData.temperature )) {
+            Serial.println(F("Failed to read from DHT sensor!"));
+            dhtData.humidity = dhtData.temperature = 0;
+        }
+        return dhtData;
+    }
+
+    #endif
+
     void App::setup() {
         matrix.begin(0x70);
         delay(100);
