@@ -74,6 +74,7 @@ message(STATUS "Device [${BOARD_DEVICE}] have been selected.")
 
 set(CMAKE_TOOLCHAIN_FILE ${PROJECT_DIR}/cmake/ArduinoToolchain.cmake)
 set(ARDUINO_LIBRARIES Wire)
+
 set(CUSTOM_LIBRARIES
         DS1307RTC
         Adafruit_LEDBackpack

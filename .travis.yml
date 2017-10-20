@@ -1,23 +1,26 @@
 language: c
 cache:
   directories:
-    - ~/arduino-sdk
+    - ${HOME}/arduino-sdk
+    - ${HOME}/arduino-libraries
 env:
   global:
     - BOARD_NAME=uno
     - BOARD_DEVICE=/dev/null
     - ARDUINO_SDK_VERSION=1.8.4
+    - ARDUINO_CUSTOM_LIBRARY_PATH=${HOME}/arduino-libraries
+    - ARDUINO_SDK_PATH=${HOME}/arduino-sdk
 addons:
   apt:
     packages:
+      - ruby
       - cmake
       - gcc-avr
       - binutils-avr
       - avr-libc
       - avrdude
 before_install:
-  - if [[ ! -d ~/arduino-sdk ]] ; then export PROJ=$(pwd); cd ~/; wget "https://downloads.arduino.cc/arduino-$ARDUINO_SDK_VERSION-linux32.tar.xz" -O arduino-sdk.tar.xz; mkdir -p ~/arduino-sdk ; tar xf arduino-sdk.tar.xz -C arduino-sdk --strip-components 1 ; cd ${PROJ}; fi
-  - export ARDUINO_SDK_PATH=~/arduino-sdk
+  - if [[ ! -d ${HOME}/arduino-sdk ]] ; then export PROJ=$(pwd); cd ~/; wget "https://downloads.arduino.cc/arduino-$ARDUINO_SDK_VERSION-linux32.tar.xz" -O arduino-sdk.tar.xz; mkdir -p ~/arduino-sdk ; tar xf arduino-sdk.tar.xz -C arduino-sdk --strip-components 1 ; cd ${PROJ}; fi
   - if [[ ! -d ${ARDUINO_SDK_PATH} ]] ; then echo "Can not find directory at ${ARDUINO_SDK_PATH}!"; exit 127; fi
 script:
   - cd src
