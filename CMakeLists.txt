@@ -70,7 +70,7 @@ endif ()
 message(STATUS "Board name is set with ENV[BOARD_NAME], currently: [$ENV{BOARD_NAME}]")
 
 # Include Custom Functions
-include(cmake/functions.cmake )
+include(cmake/Arli.cmake )
 # Special flags for some particular boards
 set(nano.build.mcu atmega328p)
 set(nano.upload.speed 57600)
