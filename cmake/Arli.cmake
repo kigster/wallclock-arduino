@@ -1,4 +1,21 @@
+#=============================================================================#
+# Author:    Konstantin Gredeskoul (kigster)
+# Home:      https://github.com/kigster/arli
+# License:   MIT
+# Copyright: (C) 2017 Konstantin Gredeskoul
+#=============================================================================#
 
+
+#=============================================================================#
+# detect_arduino_device
+# [PUBLIC]
+#
+# detect_arduino_device()
+#
+# Automatically detects a USB Arduino Serial port by doing ls on /dev
+# Errors if more than 1 port was found, or if none were found.
+# Set environment variable BOARD_DEVICE to override auto-detection.
+#=============================================================================#
 FUNCTION(detect_arduino_device)
     if (DEFINED ENV{BOARD_DEVICE})
         message(STATUS "Using device from environment variable BOARD_DEVICE")
@@ -32,6 +49,19 @@ FUNCTION(detect_arduino_device)
     set(BOARD_DEVICE PARENT_SCOPE)
 ENDFUNCTION(detect_arduino_device)
 
+
+#=============================================================================#
+# arli_libraries
+# [PUBLIC]
+#
+# arli_libraries(SOURCE_DIR)
+#
+#      SOURCE_DIR   - where to look for arli.json
+#
+# Processes arli.json file in the main source folder to build a list of
+# dependent libraries. Exports an environment variable ARLI_LIBRARIES as a
+# semi-colon separated list of library names.
+#=============================================================================#
 FUNCTION(arli_libraries SOURCE_DIR)
     execute_process(
             COMMAND "/usr/bin/ruby" "-e" "require \"json\"; JSON.load(File.read(\"arli.json\"))[\"dependencies\"].map{ |k| k[\"name\"]}.each {|l| printf l + \";\"}"
@@ -45,6 +75,19 @@ FUNCTION(arli_libraries SOURCE_DIR)
     message(STATUS "Auto-loaded ARLI Libraries: $ENV{ARLI_LIBRARIES}")
 ENDFUNCTION(arli_libraries)
 
+
+#=============================================================================#
+# build_library
+# [PUBLIC]
+#
+# build_library(LIB LIB_SOURCE_PATH)
+#
+#      LIB               - name of the library to build
+#      LIB_SOURCE_PATH   - path to the top-level 'libraries' folder.
+#
+# Builds a library as a static .a library that can be linked by the main
+# target.
+#=============================================================================#
 FUNCTION(build_library LIB LIB_SOURCE_PATH)
     set(${LIB}_RECURSE true)
 
@@ -70,7 +113,16 @@ FUNCTION(build_library LIB LIB_SOURCE_PATH)
             BOARD $ENV{BOARD_NAME})
 ENDFUNCTION(build_library)
 
-
+#=============================================================================#
+# prepend
+# [PUBLIC]
+#
+# prepend(var prefix)
+#
+#      var      - variable containing a list
+#      prefix   - string to prepend to each list item
+#
+#=============================================================================#
 FUNCTION(prepend var prefix)
     SET(listVar "")
     FOREACH (f ${ARGN})
