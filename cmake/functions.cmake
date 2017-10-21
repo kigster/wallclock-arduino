@@ -24,7 +24,7 @@ FUNCTION(detect_arduino_device)
         message(FATAL_ERROR "No devices have been found, aborting!")
     elseif (${NUM_DEVICES} EQUAL 1)
         message(STATUS "Auto-detected 1 device ${BOARD_DEVICE}, continuing...")
-    else()
+    else ()
         message(FATAL_ERROR "Too many devices have been detected! Force device by setting 'BOARD_DEVICE' variable, or unplug one or more devices!")
     endif ()
 
@@ -32,7 +32,18 @@ FUNCTION(detect_arduino_device)
     set(BOARD_DEVICE PARENT_SCOPE)
 ENDFUNCTION(detect_arduino_device)
 
-
+FUNCTION(arli_libraries SOURCE_DIR)
+    execute_process(
+            COMMAND "/usr/bin/ruby" "-e" "require \"json\"; JSON.load(File.read(\"arli.json\"))[\"dependencies\"].map{ |k| k[\"name\"]}.each {|l| printf l + \";\"}"
+            OUTPUT_VARIABLE ARLI_LIBRARIES_STDOUT
+            ERROR_VARIABLE ARLI_LIBRARIES_STDERR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            WORKING_DIRECTORY ${SOURCE_DIR}
+    )
+    #STRING(REGEX REPLACE "\n" ";" ARLI_LIBRARIES ${ARLI_LIBRARIES_STDOUT})
+    set(ENV{ARLI_LIBRARIES} "${ARLI_LIBRARIES_STDOUT}")
+    message(STATUS "Auto-loaded ARLI Libraries: $ENV{ARLI_LIBRARIES}")
+ENDFUNCTION(arli_libraries)
 
 FUNCTION(build_library LIB LIB_SOURCE_PATH)
     set(${LIB}_RECURSE true)
@@ -46,18 +57,12 @@ FUNCTION(build_library LIB LIB_SOURCE_PATH)
     separate_arguments(LIB_SOURCES)
     separate_arguments(LIB_HEADERS)
 
-#    list(LENGTH LIB_SOURCES num_sources)
-#    list(LENGTH LIB_HEADERS num_headers)
-#    message(STATUS "total ${num_sources} sources, and ${num_headers} extra headers")
-#
     prepend(LIB_SOURCES ${LIB_SOURCE_PATH} ${LIB_SOURCES})
     prepend(LIB_HEADERS ${LIB_SOURCE_PATH} ${LIB_HEADERS})
 
-    message("LIB_SOURCES: ${LIB_SOURCES}\nLIB_HEADERS: ${LIB_HEADERS}")
-
-    if(NOT DEFINED ENV{${LIB}_ONLY_HEADER})
+    if (NOT DEFINED ENV{${LIB}_ONLY_HEADER})
         list(APPEND LIB_SOURCES ${LIB_SOURCE_PATH}/${LIB}.cpp)
-    endif()
+    endif ()
 
     GENERATE_ARDUINO_LIBRARY(${LIB}
             SRCS ${LIB_SOURCE_PATH}/${LIB}.h ${LIB_SOURCES} ${LIB_HEADERS}
@@ -67,9 +72,9 @@ ENDFUNCTION(build_library)
 
 
 FUNCTION(prepend var prefix)
-   SET(listVar "")
-   FOREACH(f ${ARGN})
-      LIST(APPEND listVar "${prefix}/${f}")
-   ENDFOREACH(f)
-   SET(${var} "${listVar}" PARENT_SCOPE)
+    SET(listVar "")
+    FOREACH (f ${ARGN})
+        LIST(APPEND listVar "${prefix}/${f}")
+    ENDFOREACH (f)
+    SET(${var} "${listVar}" PARENT_SCOPE)
 ENDFUNCTION(prepend)

@@ -55,7 +55,7 @@ else ()
 endif ()
 
 if (NOT DEFINED $ENV{ARDUINO_CUSTOM_LIBRARY_PATH})
-    set(ARDUINO_CUSTOM_LIBRARY_PATH /Users/kig/Dropbox/Workspace/oss/arduino/libraries)
+    set(ARDUINO_CUSTOM_LIBRARY_PATH /Documents/Arduino/Libraries)
 else ()
     set(ARDUINO_CUSTOM_LIBRARY_PATH $ENV{ARDUINO_CUSTOM_LIBRARY_PATH})
 endif ()
@@ -69,32 +69,31 @@ if (NOT DEFINED ENV{BOARD_NAME})
 endif ()
 message(STATUS "Board name is set with ENV[BOARD_NAME], currently: [$ENV{BOARD_NAME}]")
 
-include(cmake/functions.cmake)
-
+# Include Custom Functions
+include(cmake/functions.cmake )
+# Special flags for some particular boards
 set(nano.build.mcu atmega328p)
 set(nano.upload.speed 57600)
 
+# Auto-detect from /dev
 detect_arduino_device()
+
 set(BOARD_DEVICE $ENV{BOARD_DEVICE})
 message(STATUS "Device [${BOARD_DEVICE}] have been selected.")
 
+# Import Arduino Toolchain
 set(CMAKE_TOOLCHAIN_FILE ${PROJECT_DIR}/cmake/ArduinoToolchain.cmake)
+
+# These are Arduino provided libs we depend on
 set(ARDUINO_LIBRARIES Wire)
 
-set(CUSTOM_LIBRARIES
-        DS1307RTC
-        Adafruit_LEDBackpack
-        Adafruit_GFX
-        Adafruit_NeoPixel
-        Adafruit_Sensor
-        DHT
-        OneButton
-        SimpleTimer
-        Time
-        )
+# Let's load libraries from 'arli.json'
+arli_libraries(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(ENV{Encoder_HEADERS} "utility/interrupt_config.h utility/interrupt_pins.h")
-set(ENV{Encoder_SOURCES} "utility/interrupt_config.h utility/interrupt_pins.h")
+set(CUSTOM_LIBRARIES "$ENV{ARLI_LIBRARIES}")
+separate_arguments(CUSTOM_LIBRARIES)
+
+# Define various special flags on some libs
 set(ENV{Wire_HEADERS} utility/twi.h)
 set(ENV{Wire_SOURCES} utility/twi.c)
 set(ENV{Adafruit_Sensor_ONLY_HEADER} 1)
