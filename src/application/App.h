@@ -14,19 +14,11 @@
 #include "Configuration.h"
 #include "State.h"
 
-#ifdef ENABLE_LCD
-#include <LiquidCrystal_I2C.h>
-#endif
-
 #ifdef ENABLE_SET_TIME
 #include "SetTimeHelper.h"
 #include "SetTimeMenu.h"
 #endif
 
-#ifdef ENABLE_NEOPIXELS
-#include "NeoPixelManager.h"
-#include "NeoPixelEffects.h"
-#endif
 
 namespace SetTime {
     typedef enum TimeChangeMode_e {
@@ -35,8 +27,6 @@ namespace SetTime {
 };
 
 namespace WallClock {
-
-
     typedef struct PinoutMapping_s {
          uint8_t pinPhotoResistor;
          uint8_t pinRotaryLeft;
@@ -71,10 +61,10 @@ namespace WallClock {
             Adafruit_7segment                           &matrix;
             OneButton                                   &button;
 
-            uint32_t                                    lastDisplayedTime, lastKnobTouched;
+            uint32_t                                    lastDebugLogAt, lastKnobTouched, lastPotentiometerRead;
 
             bool                                        colonOn, screenOn, neoPixelsOn;
-            int                                         lastPhotoValue, currentPhotoValue;
+            int                                         lastPhotoValue, currentPhotoValue, lastPotValue;
             float                                       photoOffsetPercentage;
 
 
@@ -104,8 +94,10 @@ namespace WallClock {
                 DHT *dht;
                 DHT_SensorData dhtData;
                 void setDHT22(DHT *_dht);
-                DHT_SensorData readDHT(const bool isFahrenheit);
+                void readDHT();
+                void changeTemperatureUnits();
             #endif
+
 
             void setup();
             void run();
@@ -119,8 +111,6 @@ namespace WallClock {
 
             void toggleDisplay();
             void toggleNeoPixels();
-            void neoPixelRefresh();
-            void neoPixelNextEffect();
 
             void cb_ButtonClick();
             void cb_ButtonDoubleClick();
@@ -128,9 +118,14 @@ namespace WallClock {
 
             void debug(int row, const char *message, bool clear);
             void debug(const char *message);
+            void debugLog();
+
 
             bool processPhotoresistorChange();
             bool processKnobEvents();
+            bool processDHTChange();
+            bool processPotentiometer();
+
 
             OneButton* getButton();
             RotaryEncoderWithButton *getRotary();

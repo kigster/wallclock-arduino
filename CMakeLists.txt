@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.2.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (NOT DEFINED ENV{ARDUINO_SDK_PATH})
@@ -19,7 +20,7 @@ set(ARDUINO_SDK_HARDWARE_LIBRARY_PATH "${ARDUINO_SDK_PATH}/hardware/arduino/avr/
 set(ARDUINO_CUSTOM_LIBRARY_PATH $ENV{ARDUINO_CUSTOM_LIBRARY_PATH})
 
 if (NOT DEFINED ENV{BOARD_NAME})
-    set(ENV{BOARD_NAME} "uno")
+    set(ENV{BOARD_NAME} "nano")
 endif ()
 message(STATUS "Board name is set with ENV[BOARD_NAME], currently: [$ENV{BOARD_NAME}]")
 
@@ -44,7 +45,8 @@ set(ARDUINO_LIBRARIES Wire)
 # Let's load libraries from 'arli.json'
 arli_libraries(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(CUSTOM_LIBRARIES "$ENV{ARLI_LIBRARIES}")
+set(CUSTOM_LIBRARIES "${ARLI_LIBRARIES}")
+
 separate_arguments(CUSTOM_LIBRARIES)
 
 # Define various special flags on some libs

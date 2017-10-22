@@ -39,10 +39,6 @@ WallClock::PinoutMapping pinout = {
         3,     // Right Rotary (interrupt enabled)
 
         4,     // Rotary Button
-#ifdef ENABLE_NEOPIXELS
-        6,     // pin for NeoPixels
-        2,     // Number of NeoPixels
-#endif
 #ifdef ENABLE_ANALOG_POTENTIOMETER
         A0,
 #endif
@@ -68,7 +64,6 @@ Adafruit_7segment matrix;
 
 WallClock::App app(pinout, state, rotary, matrix, button);
 
-#include <SimpleTimer.h>
 SimpleTimer timer;
 
 #ifdef TEENSYDUINO
@@ -99,12 +94,6 @@ void readPhotoResistor() {
 #ifdef ENABLE_PHOTORESISTOR
     app.processPhotoresistorChange();
 #endif
-}
-void neoPixelRefresh() {
-    app.neoPixelRefresh();
-}
-void neoPixelNextEffect() {
-    app.neoPixelNextEffect();
 }
 
 bool detectRTC() {
@@ -148,8 +137,6 @@ void setup() {
 
     timer.setInterval( 1000, (timer_callback) displayTimeNow);
     timer.setInterval( 2000, (timer_callback) readPhotoResistor);
-    timer.setInterval( 5000, (timer_callback) neoPixelNextEffect);
-    timer.setInterval(    5, (timer_callback) neoPixelRefresh);
 
 
 #ifdef ENABLE_SET_TIME
@@ -169,17 +156,7 @@ void setup() {
 #endif /* TEENSYDUINO */
 #endif /* ENABLE_SET_TIME */
 
-#ifdef ENABLE_NEOPIXELS
-    NeoPixelEffects *n = app.neoPixelManager->effects();
-    n->reset();
-    for (int i = 0; i < 3 * 255; i++) {
-        n->fadeCycle();
-        delay(2);
-    }
-    n->fadeOut(2000);
-    app.neoPixelManager->shutoff();
-    Serial.println("Setup complete, entering loop...");
-#endif
+
 }
 
 void loop() {

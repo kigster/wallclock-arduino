@@ -13,86 +13,52 @@
 #include "App.h"
 
 namespace WallClock {
-    App::App(       PinoutMapping               &_pinout,
-                    State                       &_state,
-                    RotaryEncoderWithButton     &_rotary,
-                    Adafruit_7segment           &_matrix,
-                    OneButton                   &_button) :
+    App::App(PinoutMapping &_pinout,
+             State &_state,
+             RotaryEncoderWithButton &_rotary,
+             Adafruit_7segment &_matrix,
+             OneButton &_button) :
 
-                    pinout(_pinout),
-                    state (_state),
-                    rotary(_rotary),
-                    matrix(_matrix),
-                    button(_button)
-    {
+            pinout(_pinout),
+            state(_state),
+            rotary(_rotary),
+            matrix(_matrix),
+            button(_button) {
 
         screenOn = colonOn = true;
         mode = SetTime::Default;
-        photoOffsetPercentage = lastPhotoValue = currentPhotoValue = lastDisplayedTime = 0;
 
-        neoPixelsOn = false;
-        #ifdef ENABLE_LCD
-            lcd = new LiquidCrystal_I2C(0x3F, 20, 4);
-        #endif
-        #ifdef ENABLE_NEOPIXELS
-            neoPixelManager = new NeoPixelManager(pinout.numNeoPixels, pinout.pinNeoPixels);
-        #endif
-        #ifdef ENABLE_MENU
-            menu.setApp(this);
-        #endif
+        photoOffsetPercentage = lastPhotoValue = currentPhotoValue = lastDebugLogAt = lastPotentiometerRead = 0;
+
+#ifdef ENABLE_MENU
+        menu.setApp(this);
+#endif
     }
 
-    #ifdef ENABLE_DHT22
-    void App::setDHT22(DHT *_dht) {
-        dht = _dht;
-    }
-
-    DHT_SensorData App::readDHT(const bool isFahrenheit) {
-
-        if (millis() - dhtData.lastReadingAt < 3000)
-            return dhtData;
-
-        dhtData.lastReadingAt = millis();
-        dhtData.isFahrenheit = isFahrenheit;
-        // Reading temperature or humidity takes about 250 milliseconds!
-        dhtData.humidity = dht->readHumidity();
-        dhtData.temperature = dht->readTemperature(isFahrenheit);
-
-        // Check if any reads failed and exit early (to try again).
-        if (isnan(dhtData.humidity) || isnan(dhtData.temperature )) {
-            Serial.println(F("Failed to read from DHT sensor!"));
-            dhtData.humidity = dhtData.temperature = 0;
-        }
-        return dhtData;
-    }
-
-    #endif
 
     void App::setup() {
         matrix.begin(0x70);
         delay(100);
         matrix.clear();
         brightnessChangedEvent();
-        #ifdef ENABLE_PHOTORESISTOR
-            pinMode(pinout.pinPhotoResistor, INPUT);
-        #endif
-
-        #ifdef ENABLE_LCD
-            lcd->init();
-            // Print a message to the LCD.
-            lcd->backlight();
-            debug(1, "Clock-A-Roma v1.0", true);
-            debug(2, "Initialization completedl", true);
-        #endif
-
-        #ifdef ENABLE_NEOPIXELS
-            neoPixelManager->begin();
-        #endif
+#ifdef ENABLE_PHOTORESISTOR
+        pinMode(pinout.pinPhotoResistor, INPUT);
+#endif
+#ifdef ENABLE_ANALOG_POTENTIOMETER
+        pinMode(pinout.pinAnalogPot, INPUT);
+#endif
     }
 
     void App::run() {
-        if (processKnobEvents() || processPhotoresistorChange()) {
-            Serial.println();
+        if (    processKnobEvents() ||
+                processPotentiometer() ||
+                #ifdef ENABLE_DHT22
+                processDHTChange() ||
+                #endif
+                processPhotoresistorChange()
+            ) {
+
+            debugLog();
         }
     }
 
@@ -104,29 +70,73 @@ namespace WallClock {
             if (state.getDisplayBrightness().changeBy(delta)) {
                 lastKnobTouched = millis();
                 brightnessChangedEvent();
-                state.getPhotoresistorReading().syncTo(&state.getDisplayBrightness());
+                state.getPhotoresistorReading().syncTo(
+                        &state.getDisplayBrightness());
                 return true;
             }
         }
         return false;
     }
 
+    bool App::processPotentiometer() {
+#ifdef ENABLE_ANALOG_POTENTIOMETER
+        if (millis() - lastPotentiometerRead < 100) {
+            int val = analogRead(pinout.pinAnalogPot);
+            lastPotValue = map(val, 0, 1023, -100, 100);
+            lastPotentiometerRead = millis();
+            return true;
+        }
+#endif
+        return false;
+    }
+
+    bool App::processDHTChange() {
+#ifdef ENABLE_DHT22
+        if (millis() - dhtData.lastReadingAt < 3000) {
+            readDHT();
+            return true;
+        }
+#endif
+        return false;
+    }
+
+    void App::debugLog() {
+        #ifdef DEBUG
+        if (millis() - lastDebugLogAt > 1000) {
+            #ifdef ENABLE_PHOTORESISTOR
+            Serial.print("photoresistor readout [0-1023]: ");
+            Serial.println(currentPhotoValue);
+            #endif
+
+            #ifdef ENABLE_DHT22
+            Serial.print("temperature readout ");
+            dhtData.isFahrenheit ?
+                Serial.print(F("(F'): ")) :
+                Serial.print(F("(C'): "))
+            ;
+
+            Serial.println(dhtData.temperature);
+            #endif
+
+            #ifdef ENABLE_ANALOG_POTENTIOMETER
+            Serial.print(F("potentiometer readout [-100..100]: "));
+            Serial.println(lastPotValue);
+            #endif
+
+            lastDebugLogAt = millis();
+        }
+        #endif
+
+    }
     bool App::processPhotoresistorChange() {
         GaugedValue &photo = state.getPhotoresistorReading();
         GaugedValue &display = state.getDisplayBrightness();
 
         currentPhotoValue = analogRead(pinout.pinPhotoResistor);
 
-        #ifdef DEBUG
-            if (millis() - lastDisplayedTime > 1000) {
-                Serial.print("photoresistor readout [0-1023]: ");
-                Serial.println(currentPhotoValue);
-                lastDisplayedTime = millis();
-            }
-        #endif
-
-        if (millis() - lastKnobTouched > 2000 && currentPhotoValue != lastPhotoValue) {
-            if (photo.setCurrent(currentPhotoValue) ) {
+        if (millis() - lastKnobTouched > 2000 &&
+            currentPhotoValue != lastPhotoValue) {
+            if (photo.setCurrent(currentPhotoValue)) {
                 if (display.follow(&photo)) {
                     brightnessChangedEvent();
                     return true;
@@ -134,12 +144,6 @@ namespace WallClock {
             }
         }
 
-        #ifdef ENABLE_LCD
-            lcd->setCursor(0,2);
-            lcd->print("Photo Value: ");
-            sprintf(buffer, "%4d", v);
-            lcd->print(buffer);
-        #endif
 
         return false;
     }
@@ -148,33 +152,11 @@ namespace WallClock {
         matrix.setBrightness(state.getDisplayBrightness().getCurrent());
     }
 
-
-
-    void App::neoPixelRefresh() {
-        #ifdef ENABLE_NEOPIXELS
-            if (neoPixelsOn)
-                neoPixelManager->refreshEffect();
-        #endif
-    }
-    void App::neoPixelNextEffect() {
-        #ifdef ENABLE_NEOPIXELS
-            if (neoPixelsOn)
-                neoPixelManager->nextEffect();
-        #endif
-    }
-
     void App::debug(const char *message) {
         Serial.println(message);
     }
 
     void App::debug(int row, const char *message, bool clear) {
-        #ifdef ENABLE_LCD
-            if (clear)
-                lcd->clear();
-            row = row % 4;
-            lcd->setCursor(0, row);
-            lcd->print(message);
-        #endif
         Serial.println(message);
     }
 
@@ -182,23 +164,23 @@ namespace WallClock {
         tmElements_t tm;
         short h, m;
 
-        #ifdef TEENSYDUINO
-            breakTime(now(), tm);
-        #else
-            if (!RTC.read(tm)) {
-                if (RTC.chipPresent()) {
-                    debug(1, "Time chip detected, but not set. Resetting", true);
-                    #ifdef ENABLE_SET_TIME
-                        helper.setDateToCompileTime();
-                    #endif
-                } else {
-                    matrix.printError();
-                    debug(1, "Time chip not detected", true);
-                    colonOn = !colonOn;
-                }
-                return;
+#ifdef TEENSYDUINO
+        breakTime(now(), tm);
+#else
+        if (!RTC.read(tm)) {
+            if (RTC.chipPresent()) {
+                debug(1, "Time chip detected, but not set. Resetting", true);
+#ifdef ENABLE_SET_TIME
+                helper.setDateToCompileTime();
+#endif
+            } else {
+                matrix.printError();
+                debug(1, "Time chip not detected", true);
+                colonOn = !colonOn;
             }
-        #endif
+            return;
+        }
+#endif
 
         h = tm.Hour % 12;
         if (h == 0) { h = 12; }
@@ -206,15 +188,16 @@ namespace WallClock {
         if (screenOn) displayTime(h, m);
         Serial.print(F("> "));
         sprintf(buffer, "%2d:%02d:%02d %d/%02d/%d, Brightness [%d], Photo [%d]",
-                        h, m, tm.Second, tm.Month, tm.Day, 1970 + tm.Year,
-                        state.getDisplayBrightness().getCurrent(),
-                        state.getPhotoresistorReading().getCurrent());
+                h, m, tm.Second, tm.Month, tm.Day, 1970 + tm.Year,
+                state.getDisplayBrightness().getCurrent(),
+                state.getPhotoresistorReading().getCurrent());
         debug(2, buffer, true);
     }
-    /**
-     * We receive negative hours or minutes when the other
-     * element is being setup / modified. A bit of nasty overloading, but hey. Whatever.
-     */
+
+/**
+ * We receive negative hours or minutes when the other
+ * element is being setup / modified. A bit of nasty overloading, but hey. Whatever.
+ */
     void App::displayTime(signed short h, signed short m) {
         if (!screenOn && h >= 0 && m >= 0) return;
         matrix.clear();
@@ -238,13 +221,9 @@ namespace WallClock {
         Serial.print(F("Entering BedTimeApp::cb_ButtonClick, mode = "));
         Serial.println((int) mode);
         if (mode != SetTime::Default) {
-            #ifdef ENABLE_MENU
-                menu.nextMode();
-            #endif
-        } else {
-            #ifdef ENABLE_NEOPIXELS
-                toggleNeoPixels();
-            #endif
+#ifdef ENABLE_MENU
+            menu.nextMode();
+#endif
         }
     }
 
@@ -262,24 +241,40 @@ namespace WallClock {
         Serial.println((int) mode);
         if (mode == SetTime::Default) {
             Serial.println(F("Mode is Default -> calling configureTime()"));
-    #ifdef ENABLE_MENU
+#ifdef ENABLE_MENU
             menu.configureTime();
-    #endif
+#endif
         } else {
             Serial.println(F("Mode is not Default, Hold is ignored."));
         }
     }
 
-    void App::toggleNeoPixels() {
-         #ifdef ENABLE_NEOPIXELS
-            neoPixelsOn = !neoPixelsOn;
-            if (neoPixelsOn) {
-                neoPixelManager->nextEffect();
-            } else {
-                neoPixelManager->shutoff();
-            }
-        #endif
+#ifdef ENABLE_DHT22
+    void App::setDHT22(DHT *_dht) {
+        dht = _dht;
     }
+
+    void App::readDHT() {
+
+        // Reading temperature or humidity takes about 250 milliseconds!
+        dhtData.humidity = dht->readHumidity();
+        dhtData.temperature = dht->readTemperature(dhtData.isFahrenheit);
+
+        // Check if any reads failed and exit early (to try again).
+        if (isnan(dhtData.humidity) || isnan(dhtData.temperature)) {
+            Serial.println(F("Failed to read from DHT sensor!"));
+            dhtData.humidity = dhtData.temperature = 0;
+        }
+
+        dhtData.lastReadingAt = millis();
+    }
+
+    void App::changeTemperatureUnits() {
+        dhtData.isFahrenheit = !dhtData.isFahrenheit;
+    }
+
+#endif
+
     void App::toggleDisplay() {
         screenOn = !screenOn;
         matrix.clear();
@@ -290,9 +285,10 @@ namespace WallClock {
     }
 
 
-    OneButton* App::getButton() {
+    OneButton *App::getButton() {
         return &button;
     }
+
     RotaryEncoderWithButton *App::getRotary() {
         return &rotary;
     }

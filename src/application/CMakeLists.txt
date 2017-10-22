@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.2.2)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCES
         Encoder.cpp
         RotaryEncoderWithButton.cpp
         App.cpp
-        NeoPixelEffects.cpp
-        NeoPixelManager.cpp
         SetTimeHelper.cpp
         SetTimeMenu.cpp
         )
@@ -17,8 +16,6 @@ set(HEADERS
         utility/interrupt_pins.h
         App.h
         GaugedValue.h
-        NeoPixelEffects.h
-        NeoPixelManager.h
         SetTimeHelper.h
         SetTimeMenu.h
         State.h

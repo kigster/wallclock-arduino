@@ -1,20 +1,16 @@
 {
   "dependencies": [
     {
+     "name": "Adafruit_GFX",
+      "git": "https://github.com/adafruit/Adafruit-GFX-Library.git"
+    },
+    {
       "name": "DS1307RTC",
       "git": "https://github.com/PaulStoffregen/DS1307RTC.git"
     },
     {
       "name": "Adafruit_LEDBackpack",
       "git": "https://github.com/adafruit/Adafruit-LED-Backpack-Library.git"
-    },
-    {
-      "name": "Adafruit_GFX",
-      "git": "https://github.com/adafruit/Adafruit-GFX-Library.git"
-    },
-    {
-      "name": "Adafruit_NeoPixel",
-      "git": "https://github.com/adafruit/Adafruit_NeoPixel.git"
     },
     {
       "name": "Adafruit_Sensor",
