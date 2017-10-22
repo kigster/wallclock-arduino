@@ -29,7 +29,9 @@ WallClock::GaugedValue photoGauge("photo-value", 0, 800, 25, false);
 #endif
 
 
-// I2C uses A4 and A5
+// I2C: A4 (SDA) and A5 (SCL)
+// on schematic, they are set in the following order:
+// A5 (SCL), A4 (SDA), GND, VCC
 
 WallClock::PinoutMapping pinout = {
         A3,    // PhotoResistor
