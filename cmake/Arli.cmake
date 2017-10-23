@@ -64,13 +64,14 @@ ENDFUNCTION(detect_arduino_device)
 #=============================================================================#
 FUNCTION(arli_libraries SOURCE_DIR)
     execute_process(
-            COMMAND "/usr/bin/awk" "{if (\$2 == \"name:\") printf(\"%s;\", \$3)}" "ArliFile.yml"
+            COMMAND "/usr/bin/ruby" "-e" "require \"yaml\"; YAML.load(File.read(\"ArliFile.yml\"))[\"dependencies\"].map{ |k| k[\"name\"]}.each {|l| printf l + \";\"}"
             OUTPUT_VARIABLE ARLI_LIBRARIES_STDOUT
             ERROR_VARIABLE ARLI_LIBRARIES_STDERR
             OUTPUT_STRIP_TRAILING_WHITESPACE
             WORKING_DIRECTORY ${SOURCE_DIR}
     )
-        message(STATUS ${ARLI_LIBRARIES_STDERR})
+
+    message(STATUS ${ARLI_LIBRARIES_STDERR})
     #STRING(REGEX REPLACE "\n" ";" ARLI_LIBRARIES ${ARLI_LIBRARIES_STDOUT})
     set(ARLI_LIBRARIES "${ARLI_LIBRARIES_STDOUT}" PARENT_SCOPE)
     message(STATUS "Auto-loaded ARLI Libraries: ${ARLI_LIBRARIES}")
