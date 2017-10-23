@@ -64,17 +64,17 @@ ENDFUNCTION(detect_arduino_device)
 #=============================================================================#
 FUNCTION(arli_libraries SOURCE_DIR)
     execute_process(
-            COMMAND "/usr/bin/ruby" "-e" "require \"json\"; JSON.load(File.read(\"arli.json\"))[\"dependencies\"].map{ |k| k[\"name\"]}.each {|l| printf l + \";\"}"
+            COMMAND "/usr/bin/awk" "{if (\$2 == \"name:\") printf(\"%s;\", \$3)}" "ArliFile.yml"
             OUTPUT_VARIABLE ARLI_LIBRARIES_STDOUT
             ERROR_VARIABLE ARLI_LIBRARIES_STDERR
             OUTPUT_STRIP_TRAILING_WHITESPACE
             WORKING_DIRECTORY ${SOURCE_DIR}
     )
+        message(STATUS ${ARLI_LIBRARIES_STDERR})
     #STRING(REGEX REPLACE "\n" ";" ARLI_LIBRARIES ${ARLI_LIBRARIES_STDOUT})
-    message(STATUS "Auto-loaded ARLI Libraries: $ENV{ARLI_LIBRARIES}")
     set(ARLI_LIBRARIES "${ARLI_LIBRARIES_STDOUT}" PARENT_SCOPE)
+    message(STATUS "Auto-loaded ARLI Libraries: ${ARLI_LIBRARIES}")
 ENDFUNCTION(arli_libraries)
-
 
 #=============================================================================#
 # build_library
