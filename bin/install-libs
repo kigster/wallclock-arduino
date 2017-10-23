@@ -4,4 +4,4 @@ gem install arli
 
 rbenv rehash 2>/dev/null
 
-arli install -u
+arli install
